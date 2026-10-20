@@ -58,8 +58,10 @@ export default function Home(){
     setMessages(newMsgs)
     setInput('')
     setLoading(true)
-    try{
-          try{
+      try{
+      if(!apiKey || !apiKey.startsWith('gsk_')){
+        throw new Error('Invalid key - key must start with gsk_ - Go to console.groq.com/keys and make new one')
+      }
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey.trim()}`},
@@ -74,11 +76,14 @@ export default function Home(){
         })
       })
       const data = await res.json()
-      if(!res.ok){ throw new Error(data.error?.message || JSON.stringify(data)) }
+      if(!res.ok){
+        throw new Error(data.error?.message || 'Groq error: '+res.status)
+      }
       const reply = data.choices?.[0]?.message?.content || "hmm idk what to say... try again? 🤔"
       setMessages([...newMsgs, {role:'assistant', content:reply}])
     }catch(e:any){
-      setMessages([...newMsgs, {role:'assistant', content:reply}])
+      setMessages([...newMsgs, {role:'assistant', content:'⚠️ Error: ' + (e.message || e)}])
+      setShowKey(true)
     }catch(e:any){
       setMessages([...newMsgs, {role:'assistant', content:'⚠️ Add your free Groq key - tap top right ⚙️. Get it free from groq.com - 1 min.'}])
       setShowKey(true)
