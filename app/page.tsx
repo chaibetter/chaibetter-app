@@ -59,21 +59,25 @@ export default function Home(){
     setInput('')
     setLoading(true)
     try{
+          try{
       const res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
         method:'POST',
-        headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey}`},
+        headers:{'Content-Type':'application/json','Authorization':`Bearer ${apiKey.trim()}`},
         body: JSON.stringify({
           model:'llama-3.1-8b-instant',
           messages:[
-            {role:'system', content: selected.personality + ' Never mention you are AI. Keep replies under 100 words like Chai app.'},
-            ...newMsgs.slice(-10).map(m=>({role:m.role, content:m.content}))
+            {role:'system', content: selected.personality + ' Never mention you are AI. Keep replies short.'},
+            ...newMsgs.slice(-10).map((m:any)=>({role:m.role, content:m.content}))
           ],
           max_tokens:300,
           temperature:0.9
         })
       })
       const data = await res.json()
-      const reply = data.choices?.[0]?.message?.content || "hmm idk what to say... try again? 🥺"
+      if(!res.ok){ throw new Error(data.error?.message || JSON.stringify(data)) }
+      const reply = data.choices?.[0]?.message?.content || "hmm idk what to say... try again? 🤔"
+      setMessages([...newMsgs, {role:'assistant', content:reply}])
+    }catch(e:any){
       setMessages([...newMsgs, {role:'assistant', content:reply}])
     }catch(e:any){
       setMessages([...newMsgs, {role:'assistant', content:'⚠️ Add your free Groq key - tap top right ⚙️. Get it free from groq.com - 1 min.'}])
