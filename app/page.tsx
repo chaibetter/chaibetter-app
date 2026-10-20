@@ -78,16 +78,13 @@ export default function Home(){
       const data = await res.json()
       if(!res.ok){
         throw new Error(data.error?.message || 'Groq error: '+res.status)
-      }
-            const reply = data.choices?.[0]?.message?.content || "hmm idk what to say... try again? 🤔"
+           }
+      const reply = data.choices?.[0]?.message?.content || "hmm idk what to say... try again?"
       setMessages([...newMsgs, {role:'assistant', content:reply}])
     }catch(e:any){
       setMessages([...newMsgs, {role:'assistant', content:'⚠️ Error: ' + (e.message || e)}])
       setShowKey(true)
-    }catch(e:any){
-      setMessages([...newMsgs, {role:'assistant', content:'⚠️ Add your free Groq key - tap top right ⚙️. Get it free from groq.com - 1 min.'}])
-      setShowKey(true)
-    }
+    
     setLoading(false)
   }
 
