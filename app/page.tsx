@@ -79,7 +79,7 @@ export default function Home(){
       if(!res.ok){
         throw new Error(data.error?.message || 'Groq error: '+res.status)
       }
-      const reply = data.choices?.[0]?.message?.content || "hmm idk what to say... try again? 🤔"
+            const reply = data.choices?.[0]?.message?.content || "hmm idk what to say... try again? 🤔"
       setMessages([...newMsgs, {role:'assistant', content:reply}])
     }catch(e:any){
       setMessages([...newMsgs, {role:'assistant', content:'⚠️ Error: ' + (e.message || e)}])
